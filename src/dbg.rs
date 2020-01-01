@@ -29,6 +29,9 @@ use msg;
 pub struct Debugger {
     stdin: BufWriter<process::ChildStdin>,
     stdout: BufReader<process::ChildStdout>,
+
+    #[cfg(feature = "slog")]
+    slog: Option<slog::Logger>,
 }
 
 #[derive(Debug)]
@@ -71,6 +74,14 @@ impl Debugger {
         let mut line = String::new();
         self.stdout.read_line(&mut line)?;
         while line != "(gdb) \n" && line != "(gdb) \r\n"{
+            #[cfg(feature="slog")]
+            {
+                if let Some(slog) = &self.slog {
+                    debug!(slog, "GDB Recv: {}", line.as_str());
+                }
+            }
+
+
             match parser::parse_line(line.as_str()) {
                 Ok(resp) => result.push(resp),
                 Err(err) => return Err(err),
@@ -94,6 +105,14 @@ impl Debugger {
     }
 
     pub fn send_cmd_raw(&mut self, cmd: &str) -> Result<msg::MessageRecord<msg::ResultClass>> {
+        #[cfg(feature="slog")]
+        {
+            if let Some(slog) = &self.slog {
+                debug!(slog, "GDB Send: {}", cmd);
+            }
+        }
+
+
         if cmd.ends_with("\n") {
             write!(self.stdin, "{}", cmd)?;
         } else {
@@ -101,6 +120,11 @@ impl Debugger {
         }
         self.stdin.flush()?;
         self.read_result_record()
+    }
+
+    #[cfg(feature="slog")]
+    pub fn set_logger(&mut self, logger: slog::Logger) {
+        self.slog = Some(logger);
     }
 
     pub fn start() -> Result<Self> {
@@ -114,6 +138,9 @@ impl Debugger {
         let mut result = Debugger {
             stdin: BufWriter::new(child.stdin.take().expect("broken stdin")),
             stdout: BufReader::new(child.stdout.take().expect("broken stdout")),
+
+            #[cfg(feature="slog")]
+            slog: None,
         };
         result.read_sequence()?;
         Ok(result)
