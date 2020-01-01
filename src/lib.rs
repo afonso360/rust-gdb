@@ -17,7 +17,6 @@
 
 #[macro_use]
 extern crate lazy_static;
-extern crate regex;
 
 #[cfg(feature = "slog")]
 #[cfg_attr(feature = "slog", macro_use)]
