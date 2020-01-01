@@ -17,21 +17,21 @@
 
 use std::str;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Record {
     Result(MessageRecord<ResultClass>),
     Async(AsyncRecord),
     Stream(StreamRecord)
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct MessageRecord<ClassT> {
     pub token: Option<String>,
     pub class: ClassT,
     pub content: Vec<Variable>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum ResultClass {
     Done,
     Running,
@@ -55,41 +55,11 @@ impl str::FromStr for ResultClass {
 }
 
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum AsyncClass {
     Stopped,
     Other
 }
-
-#[derive(Debug)]
-pub enum AsyncRecord {
-    Exec(MessageRecord<AsyncClass>),
-    Status(MessageRecord<AsyncClass>),
-    Notify(MessageRecord<AsyncClass>),
-}
-
-#[derive(Debug)]
-pub enum StreamRecord {
-    Console(Constant),
-    Target(Constant),
-    Log(Constant),
-}
-
-#[derive(Debug)]
-pub struct Variable {
-    pub name: VarName,
-    pub value: Value
-}
-
-#[derive(Debug)]
-pub enum Value {
-    String(Constant),
-    VariableList(Vec<Variable>),
-    ValueList(Vec<Value>),
-}
-
-pub type VarName = String;
-pub type Constant = String;
 
 impl str::FromStr for AsyncClass {
     type Err = String;
@@ -100,3 +70,35 @@ impl str::FromStr for AsyncClass {
         }
     }
 }
+
+
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum AsyncRecord {
+    Exec(MessageRecord<AsyncClass>),
+    Status(MessageRecord<AsyncClass>),
+    Notify(MessageRecord<AsyncClass>),
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum StreamRecord {
+    Console(Constant),
+    Target(Constant),
+    Log(Constant),
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct Variable {
+    pub name: VarName,
+    pub value: Value
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum Value {
+    String(Constant),
+    VariableList(Vec<Variable>),
+    ValueList(Vec<Value>),
+}
+
+pub type VarName = String;
+pub type Constant = String;

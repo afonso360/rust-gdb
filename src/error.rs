@@ -21,6 +21,9 @@ use std::{
     error::Error,
 };
 
+
+pub type GDBResult<T> = Result<T, GDBError>;
+
 #[derive(Debug)]
 pub enum GDBError {
     IOError(io::Error),
@@ -46,8 +49,6 @@ impl Error for GDBError {
         }
     }
 }
-
-pub type GDBResult<T> = Result<T, GDBError>;
 
 impl From<io::Error> for GDBError {
     fn from(err: io::Error) -> GDBError {
