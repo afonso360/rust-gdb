@@ -23,6 +23,7 @@ extern crate regex;
 #[cfg_attr(feature = "slog", macro_use)]
 extern crate slog;
 
+mod error;
 mod dbg;
 mod parser;
 mod msg;
@@ -53,5 +54,6 @@ fn parse_stuff() {
     };
 }
 
+pub use error::*;
 pub use dbg::*;
 pub use msg::*;

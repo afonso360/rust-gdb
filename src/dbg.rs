@@ -25,6 +25,7 @@ use std::result;
 use std::str;
 use parser;
 use msg;
+use crate::error::Result;
 
 pub struct Debugger {
     stdin: BufWriter<process::ChildStdin>,
@@ -32,40 +33,6 @@ pub struct Debugger {
 
     #[cfg(feature = "slog")]
     slog: Option<slog::Logger>,
-}
-
-#[derive(Debug)]
-pub enum Error {
-    IOError(io::Error),
-    ParseError,
-    IgnoredOutput
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &Error::IOError(ref err) => write!(f, "{}", err.to_string()),
-            &Error::ParseError => write!(f, "cannot parse response from gdb"),
-            &Error::IgnoredOutput => write!(f, "ignored output")
-        }
-    }
-}
-
-impl error::Error for Error {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match self {
-            &Error::IOError(ref err) => Some(err),
-            _ => None
-        }
-    }
-}
-
-pub type Result<T> = result::Result<T, Error>;
-
-impl From<io::Error> for Error {
-    fn from(err: io::Error) -> Error {
-        Error::IOError(err)
-    }
 }
 
 impl Debugger {

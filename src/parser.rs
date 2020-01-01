@@ -18,7 +18,7 @@
 use regex;
 use std::str;
 use msg;
-use dbg;
+use crate::error;
 
 macro_rules! static_regex {
     ($id:ident = $val:expr) => {
@@ -28,7 +28,7 @@ macro_rules! static_regex {
     }
 }
 
-pub fn parse_line(line: &str) -> Result<msg::Record, dbg::Error> {
+pub fn parse_line(line: &str) -> Result<msg::Record, error::Error> {
     if let Some(result) = parse_result_line(line) {
         Ok(msg::Record::Result(result))
     } else if let Some(async) = parse_async_line(line) {
@@ -36,7 +36,7 @@ pub fn parse_line(line: &str) -> Result<msg::Record, dbg::Error> {
     } else if let Some(stream) = parse_stream_line(line) {
         Ok(msg::Record::Stream(stream))
     } else {
-        Err(dbg::Error::ParseError)
+        Err(error::Error::ParseError)
     }
 }
 
