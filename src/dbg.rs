@@ -40,21 +40,16 @@ pub enum Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let err = self as &error::Error;
-        write!(f, "{}", err.description())
+        match self {
+            &Error::IOError(ref err) => write!(f, "{}", err.to_string()),
+            &Error::ParseError => write!(f, "cannot parse response from gdb"),
+            &Error::IgnoredOutput => write!(f, "ignored output")
+        }
     }
 }
 
 impl error::Error for Error {
-    fn description(&self) -> &str {
-        match self {
-            &Error::IOError(ref err) => err.description(),
-            &Error::ParseError => "cannot parse response from gdb",
-            &Error::IgnoredOutput => "ignored output"
-        }
-    }
-
-    fn cause(&self) -> Option<&error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match self {
             &Error::IOError(ref err) => Some(err),
             _ => None
