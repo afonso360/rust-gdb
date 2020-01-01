@@ -310,3 +310,21 @@ fn parse_variable(data: &str) -> Option<(msg::Variable, &str)> {
         None
     }
 }
+
+#[cfg(test)]
+mod test {
+    use parser::*;
+
+    #[test]
+    fn test_parse_result_class() {
+        assert_eq!(parse_result_class("done"), Some((msg::ResultClass::Done, "")));
+        assert_eq!(parse_result_class("connected"), Some((msg::ResultClass::Connected, "")));
+        assert_eq!(parse_result_class("running"), Some((msg::ResultClass::Running, "")));
+        assert_eq!(parse_result_class("error"), Some((msg::ResultClass::Error, "")));
+        assert_eq!(parse_result_class("exit"), Some((msg::ResultClass::Exit, "")));
+
+        assert_eq!(parse_result_class("hello"), None);
+        assert_eq!(parse_result_class("exitasd"), Some((msg::ResultClass::Exit, "asd")));
+    }
+
+}
