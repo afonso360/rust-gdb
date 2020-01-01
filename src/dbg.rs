@@ -15,12 +15,16 @@
  * along with rust-gdb.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use std::process;
-use std::io::{Write, BufReader, BufWriter, BufRead};
-use std::str;
-use crate::parser;
-use crate::msg;
-use crate::error::Result;
+use std::{
+    process,
+    io::{Write, BufReader, BufWriter, BufRead},
+    str
+};
+use crate::{
+    parser,
+    msg,
+    error::GDBResult
+};
 
 pub struct Debugger {
     stdin: BufWriter<process::ChildStdin>,
@@ -31,7 +35,7 @@ pub struct Debugger {
 }
 
 impl Debugger {
-    fn read_sequence(&mut self) -> Result<Vec<msg::Record>> {
+    fn read_sequence(&mut self) -> GDBResult<Vec<msg::Record>> {
         let mut result = Vec::new();
         let mut line = String::new();
         self.stdout.read_line(&mut line)?;
@@ -54,7 +58,7 @@ impl Debugger {
         Ok(result)
     }
 
-    fn read_result_record(&mut self) -> Result<msg::MessageRecord<msg::ResultClass>> {
+    fn read_result_record(&mut self) -> GDBResult<msg::MessageRecord<msg::ResultClass>> {
         loop {
             let sequence = self.read_sequence()?;
             for record in sequence.into_iter() {
@@ -66,7 +70,7 @@ impl Debugger {
         }
     }
 
-    pub fn send_cmd_raw(&mut self, cmd: &str) -> Result<msg::MessageRecord<msg::ResultClass>> {
+    pub fn send_cmd_raw(&mut self, cmd: &str) -> GDBResult<msg::MessageRecord<msg::ResultClass>> {
         #[cfg(feature="slog")]
         {
             if let Some(slog) = &self.slog {
@@ -89,7 +93,7 @@ impl Debugger {
         self.slog = Some(logger);
     }
 
-    pub fn start() -> Result<Self> {
+    pub fn start() -> GDBResult<Self> {
         let name = ::std::env::var("GDB_BINARY").unwrap_or("gdb".to_string());
         let mut child = process::Command::new(name)
             .args(&["--interpreter=mi"])

@@ -15,38 +15,42 @@
  * along with rust-gdb.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use std::{io, fmt, error, result};
+use std::{
+    io,
+    fmt,
+    error::Error,
+};
 
 #[derive(Debug)]
-pub enum Error {
+pub enum GDBError {
     IOError(io::Error),
     ParseError,
     IgnoredOutput
 }
 
-impl fmt::Display for Error {
+impl fmt::Display for GDBError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            &Error::IOError(ref err) => write!(f, "{}", err.to_string()),
-            &Error::ParseError => write!(f, "cannot parse response from gdb"),
-            &Error::IgnoredOutput => write!(f, "ignored output")
+            &GDBError::IOError(ref err) => write!(f, "{}", err.to_string()),
+            &GDBError::ParseError => write!(f, "cannot parse response from gdb"),
+            &GDBError::IgnoredOutput => write!(f, "ignored output")
         }
     }
 }
 
-impl error::Error for Error {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+impl Error for GDBError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
-            &Error::IOError(ref err) => Some(err),
+            &GDBError::IOError(ref err) => Some(err),
             _ => None
         }
     }
 }
 
-pub type Result<T> = result::Result<T, Error>;
+pub type GDBResult<T> = Result<T, GDBError>;
 
-impl From<io::Error> for Error {
-    fn from(err: io::Error) -> Error {
-        Error::IOError(err)
+impl From<io::Error> for GDBError {
+    fn from(err: io::Error) -> GDBError {
+        GDBError::IOError(err)
     }
 }

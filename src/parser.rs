@@ -17,8 +17,10 @@
 
 use regex;
 use std::str;
-use crate::msg;
-use crate::error;
+use crate::{
+    msg,
+    error::{GDBResult, GDBError},
+};
 
 macro_rules! static_regex {
     ($id:ident = $val:expr) => {
@@ -28,7 +30,7 @@ macro_rules! static_regex {
     }
 }
 
-pub fn parse_line(line: &str) -> Result<msg::Record, error::Error> {
+pub fn parse_line(line: &str) -> GDBResult<msg::Record> {
     if let Some(result) = parse_result_line(line) {
         Ok(msg::Record::Result(result))
     } else if let Some(r#async) = parse_async_line(line) {
@@ -36,7 +38,7 @@ pub fn parse_line(line: &str) -> Result<msg::Record, error::Error> {
     } else if let Some(stream) = parse_stream_line(line) {
         Ok(msg::Record::Stream(stream))
     } else {
-        Err(error::Error::ParseError)
+        Err(GDBError::ParseError)
     }
 }
 

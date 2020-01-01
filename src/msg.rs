@@ -40,6 +40,21 @@ pub enum ResultClass {
     Exit
 }
 
+impl str::FromStr for ResultClass {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "done" => Ok(ResultClass::Done),
+            "running" => Ok(ResultClass::Running),
+            "connected" => Ok(ResultClass::Connected),
+            "error" => Ok(ResultClass::Error),
+            "exit" => Ok(ResultClass::Exit),
+            _ => Err("unrecognized result class".to_string()),
+        }
+    }
+}
+
+
 #[derive(Debug, PartialEq)]
 pub enum AsyncClass {
     Stopped,
@@ -75,20 +90,6 @@ pub enum Value {
 
 pub type VarName = String;
 pub type Constant = String;
-
-impl str::FromStr for ResultClass {
-    type Err = String;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "done" => Ok(ResultClass::Done),
-            "running" => Ok(ResultClass::Running),
-            "connected" => Ok(ResultClass::Connected),
-            "error" => Ok(ResultClass::Error),
-            "exit" => Ok(ResultClass::Exit),
-            _ => Err("unrecognized result class".to_string()),
-        }
-    }
-}
 
 impl str::FromStr for AsyncClass {
     type Err = String;
