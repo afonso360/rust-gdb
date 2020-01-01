@@ -329,4 +329,22 @@ mod test {
         assert_eq!(parse_result_class("exitasd"), Some((msg::ResultClass::Exit, "asd")));
     }
 
+    #[test]
+    fn parse_stuff() {
+        let resp = parser::parse_line("789^done,this=\"that\"\n").unwrap();
+        match resp {
+            msg::Record::Result(_) => {},
+            _ => panic!("wrong type :(")
+        };
+        let resp = parser::parse_line("=stopped,this=\"that\"\n").unwrap();
+        match resp {
+            msg::Record::Async(_) => {},
+            _ => panic!("wrong type :(")
+        };
+        let resp = parser::parse_line("~\"yadda yadda\"\n").unwrap();
+        match resp {
+            msg::Record::Stream(_) => {},
+            _ => panic!("wrong type :(")
+        };
+    }
 }

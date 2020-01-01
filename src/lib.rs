@@ -27,32 +27,17 @@ mod dbg;
 mod parser;
 mod msg;
 
-#[test]
-fn start_debugger() {
-    let mut dbg = dbg::Debugger::start().unwrap();
-    let resp = dbg.send_cmd_raw("-break-info\n").unwrap();
-    assert_eq!(msg::ResultClass::Done, resp.class);
-}
-
-#[test]
-fn parse_stuff() {
-    let resp = parser::parse_line("789^done,this=\"that\"\n").unwrap();
-    match resp {
-        msg::Record::Result(_) => {},
-        _ => panic!("wrong type :(")
-    };
-    let resp = parser::parse_line("=stopped,this=\"that\"\n").unwrap();
-    match resp {
-        msg::Record::Async(_) => {},
-        _ => panic!("wrong type :(")
-    };
-    let resp = parser::parse_line("~\"yadda yadda\"\n").unwrap();
-    match resp {
-        msg::Record::Stream(_) => {},
-        _ => panic!("wrong type :(")
-    };
-}
-
 pub use crate::error::*;
 pub use crate::dbg::*;
 pub use crate::msg::*;
+
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn start_debugger() {
+        let mut dbg = dbg::Debugger::start().unwrap();
+        let resp = dbg.send_cmd_raw("-break-info\n").unwrap();
+        assert_eq!(msg::ResultClass::Done, resp.class);
+    }
+}
