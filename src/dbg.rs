@@ -17,14 +17,9 @@
 
 use std::process;
 use std::io::{Write, BufReader, BufWriter, BufRead};
-use std::io;
-use std::error;
-use std::fmt;
-use std::convert::From;
-use std::result;
 use std::str;
-use parser;
-use msg;
+use crate::parser;
+use crate::msg;
 use crate::error::Result;
 
 pub struct Debugger {

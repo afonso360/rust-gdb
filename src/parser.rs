@@ -17,7 +17,7 @@
 
 use regex;
 use std::str;
-use msg;
+use crate::msg;
 use crate::error;
 
 macro_rules! static_regex {
@@ -31,8 +31,8 @@ macro_rules! static_regex {
 pub fn parse_line(line: &str) -> Result<msg::Record, error::Error> {
     if let Some(result) = parse_result_line(line) {
         Ok(msg::Record::Result(result))
-    } else if let Some(async) = parse_async_line(line) {
-        Ok(msg::Record::Async(async))
+    } else if let Some(r#async) = parse_async_line(line) {
+        Ok(msg::Record::Async(r#async))
     } else if let Some(stream) = parse_stream_line(line) {
         Ok(msg::Record::Stream(stream))
     } else {
@@ -313,7 +313,7 @@ fn parse_variable(data: &str) -> Option<(msg::Variable, &str)> {
 
 #[cfg(test)]
 mod test {
-    use parser::*;
+    use crate::parser::*;
 
     #[test]
     fn test_parse_result_class() {
