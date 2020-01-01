@@ -190,48 +190,40 @@ fn parse<T: str::FromStr>(data: &str, toklen: usize) -> (T, &str) {
 
 fn parse_token(data: &str) -> Option<(String, &str)> {
     static_regex!(RE = r"^[0-9]+");
-    if let Some((_, count)) = RE.find(data) {
-        Some(parse(data, count))
-    } else {
-        None
-    }
+
+    RE.find(data)
+        .map(|m| parse(data, m.end()))
 }
 
 fn parse_result_class(data: &str) -> Option<(msg::ResultClass, &str)> {
     static_regex!(RE = r"^(done|connected|running|error|exit)");
-    if let Some((_, count)) = RE.find(data) {
-        Some(parse(data, count))
-    } else {
-        None
-    }
+
+    RE.find(data)
+        .map(|m| parse(data, m.end()))
 }
 
 fn parse_async_class(data: &str) -> Option<(msg::AsyncClass, &str)> {
     static_regex!(RE = r"^[-a-zA-Z]+");
-    if let Some((_, count)) = RE.find(data) {
-        Some(parse(data, count))
-    } else {
-        None
-    }
+
+    RE.find(data)
+        .map(|m| parse(data, m.end()))
 }
 
 fn parse_varname(data: &str) -> Option<(msg::VarName, &str)> {
     static_regex!(RE = r"^[a-zA-Z_][a-zA-Z0-9_-]*");
-    if let Some((_, count)) = RE.find(data) {
-        Some(parse(data, count))
-    } else {
-        None
-    }
+
+    RE.find(data)
+        .map(|m| parse(data, m.end()))
 }
 
 fn parse_constant(data: &str) -> Option<(msg::Value, &str)> {
     static_regex!(RE = r#"^(".*?[^\\]"|"")"#);
-    if let Some((_, count)) = RE.find(data) {
-        let (value, rest) = parse(data, count);
-        Some((msg::Value::String(value), rest))
-    } else {
-        None
-    }
+
+    RE.find(data)
+        .map(|m| {
+            let (value, rest) = parse(data, m.end());
+            (msg::Value::String(value), rest)
+        })
 }
 
 fn parse_variable_list(data: &str) -> Option<(msg::Value, &str)> {
@@ -307,7 +299,7 @@ fn parse_variable(data: &str) -> Option<(msg::Variable, &str)> {
         match rest.chars().nth(0) {
             Some('=') => if let Some((val, rest)) =
                     parse_value(rest.split_at(1).1) {
-                        Some((msg::Variable { name: var, value: val }, rest))   
+                        Some((msg::Variable { name: var, value: val }, rest))
                     } else {
                         None
                     }

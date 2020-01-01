@@ -9,5 +9,5 @@ keywords = ["gdb", "debugger"]
 license = "GPL-3.0"
 
 [dependencies]
-regex = "0.1"
+regex = "1.3"
 lazy_static = "1.4"
